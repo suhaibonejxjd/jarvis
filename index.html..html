@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06111f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>JARVIS — Personal Assistant</title>
+<style>
+:root{color-scheme:dark;--cyan:#66e7ff;--blue:#198db9;--muted:#8ba9bb;--panel:#0a1b2b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 30%,#102b42 0,#06111f 58%,#030912 100%);color:#eafaff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:680px;margin:auto;padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 28px)}
+header{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;letter-spacing:2px}
+.status{color:#80efbd}.status:before{content:"";display:inline-block;width:7px;height:7px;background:#54e5a0;border-radius:50%;margin-right:7px;box-shadow:0 0 12px #54e5a0}
+h1{text-align:center;letter-spacing:8px;font-size:clamp(26px,7vw,38px);font-weight:300;margin:38px 0 4px;color:#dffaff;text-shadow:0 0 18px #38cfff66}
+.sub{text-align:center;color:var(--muted);font-size:11px;letter-spacing:3px}
+.core-wrap{height:270px;display:grid;place-items:center;position:relative;margin:10px 0}
+.core{width:210px;height:210px;border-radius:50%;position:relative;display:grid;place-items:center;filter:drop-shadow(0 0 22px #21cfff66)}
+.ring{position:absolute;border:1px solid #49dfff88;border-radius:50%;inset:0;animation:spin 18s linear infinite}
+.ring.r2{inset:17px;border-style:dashed;animation:spin 12s linear infinite reverse;border-color:#5ae8ff99}
+.ring.r3{inset:37px;border-width:2px;border-color:#4bdfff55;animation:pulse 2.5s ease-in-out infinite}
+.ring:before,.ring:after{content:"";position:absolute;width:7px;height:7px;background:var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cyan);top:22%;left:8%}
+.ring:after{top:auto;left:auto;right:9%;bottom:20%}
+.orb{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#eaffff,#6ceaff 20%,#117da9 48%,#061b30 72%);box-shadow:0 0 20px #54e6ff,0 0 65px #24bfff88;animation:pulse 2s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.07);opacity:.7}}
+body.listening .orb{animation:pulse .65s infinite;box-shadow:0 0 30px #5affd0,0 0 85px #26e9b588}
+body.thinking .ring{animation-duration:2s}
+.readout{text-align:center;min-height:44px;color:var(--cyan);font-size:13px;letter-spacing:1px}
+.panel{background:linear-gradient(145deg,#0d2235dd,#071421ee);border:1px solid #2c779355;border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 12px 35px #0005}
+.panel-title{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:12px}
+#log{min-height:76px;max-height:190px;overflow:auto;font-size:14px;line-height:1.55;color:#d5e9f2}
+.line{margin:8px 0}.who{color:var(--cyan);font-size:10px;letter-spacing:1px;display:block;margin-bottom:2px}
+.controls{display:flex;gap:10px;margin-top:14px}
+button{border:1px solid #3caecb88;background:#0c2b40;color:#e9fbff;border-radius:13px;padding:14px 12px;font:inherit;cursor:pointer}
+#talk{flex:1;background:linear-gradient(120deg,#0e7397,#12425e);border-color:#65eaff;font-weight:600;letter-spacing:1px}
+#talk:active,button:active{transform:scale(.98)}
+input{width:100%;background:#061522;border:1px solid #28617a;color:#eafaff;border-radius:12px;padding:14px;font:inherit;outline:none}
+.send{min-width:70px}
+.note{font-size:11px;line-height:1.5;color:#7794a6;margin:12px 2px 0}
+.task{padding:9px 0;border-bottom:1px solid #1c3c50;font-size:13px}.task:last-child{border:0}
+.task button{padding:4px 9px;float:right;font-size:11px}
+</style>
+</head>
+<body>
+<main>
+<header><span>PERSONAL ASSISTANT / PROTOTYPE</span><span class="status" id="status">SYSTEM READY</span></header>
+<h1>J.A.R.V.I.S.</h1><div class="sub">VOICE INTERFACE · BUILD 001</div>
+<section class="core-wrap"><div class="core"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="orb"></div></div></section>
+<div class="readout" id="readout">READY FOR INPUT</div>
+<section class="panel"><div class="panel-title">CONVERSATION</div><div id="log" aria-live="polite"><div class="line"><span class="who">JARVIS</span>Interface initialised. Tap the microphone button or type a test command.</div></div></section>
+<div class="controls"><button id="talk">🎙  TALK TO JARVIS</button><button id="stop">STOP</button></div>
+<div class="controls"><input id="message" placeholder="Type a command…" autocomplete="off"><button class="send" id="send">SEND</button></div>
+<section class="panel"><div class="panel-title">TASK LIST · SAVED ON THIS DEVICE</div><div id="tasks"><div class="task">No tasks saved yet.</div></div></section>
+<p class="note">Prototype 001: the interface, local task list and device speech are functional. It does not yet connect to an AI model, cloud memory, external accounts or background task runner. Microphone support depends on Safari permissions and iOS browser support.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let recognition=null, speaking=false;
+function log(who,text){const d=document.createElement('div');d.className='line';const s=document.createElement('span');s.className='who';s.textContent=who;const t=document.createElement('span');t.textContent=text;d.append(s,t);$('log').append(d);$('log').scrollTop=$('log').scrollHeight}
+function state(s,label){document.body.className=s;$('readout').textContent=label;$('status').textContent=s==='listening'?'LISTENING':s==='thinking'?'PROCESSING':'SYSTEM READY'}
+function speak(text){if(!('speechSynthesis'in window)){log('SYSTEM','Speech output is unavailable in this browser.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=.96;u.pitch=.92;u.onstart=()=>{speaking=true;state('thinking','JARVIS IS SPEAKING')};u.onend=()=>{speaking=false;state('','READY FOR INPUT')};speechSynthesis.speak(u)}
+function loadTasks(){let a=JSON.parse(localStorage.getItem('jarvisTasks')||'[]');$('tasks').innerHTML='';if(!a.length){$('tasks').textContent='No tasks saved yet.';return}a.forEach((x,i)=>{let d=document.createElement('div');d.className='task';d.textContent=x;let b=document.createElement('button');b.textContent='DONE';b.onclick=()=>{a.splice(i,1);localStorage.setItem('jarvisTasks',JSON.stringify(a));loadTasks()};d.append(b);$('tasks').append(d)})}
+function answer(raw){let q=raw.trim();if(!q)return;log('YOU',q);state('thinking','ANALYSING INPUT');let low=q.toLowerCase();let reply;
+if(low.startsWith('remember task ')||low.startsWith('add task ')){let task=q.replace(/^(remember task |add task )/i,'').trim();let a=JSON.parse(localStorage.getItem('jarvisTasks')||'[]');a.push(task);localStorage.setItem('jarvisTasks',JSON.stringify(a));loadTasks();reply='Task saved on this iPhone: '+task}
+else if(low.includes('show my tasks')||low.includes('list tasks')){let a=JSON.parse(localStorage.getItem('jarvisTasks')||'[]');reply=a.length?'Your saved tasks are: '+a.join('; '):'There are no saved tasks yet.'}
+else if(low.includes('hello')||low.includes('hi jarvis'))reply='Hello. Systems are online. What would you like to work on?'
+else if(low.includes('who are you'))reply='I am your personal assistant prototype. My reasoning and connected task systems have not been added yet.'
+else reply='I have received your request. This prototype does not have an AI reasoning connection yet, so I cannot reliably complete that task. We will add the intelligence layer next.';
+log('JARVIS',reply);setTimeout(()=>speak(reply),180); 
+}
+function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){log('SYSTEM','Speech recognition is not available here. Please type your command for now.');return}try{recognition=new SR();recognition.lang='en-GB';recognition.continuous=false;recognition.interimResults=false;recognition.onstart=()=>state('listening','LISTENING — SPEAK NOW');recognition.onresult=e=>answer(e.results[0][0].transcript);recognition.onerror=e=>{state('','READY FOR INPUT');log('SYSTEM','Microphone issue: '+e.error+'. Check Safari microphone permission.')};recognition.onend=()=>{if(document.body.classList.contains('listening'))state('','READY FOR INPUT')};recognition.start()}catch(e){log('SYSTEM','Could not start microphone. Try again or type your command.');state('','READY FOR INPUT')}}
+$('talk').onclick=startVoice;$('stop').onclick=()=>{if(recognition)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();state('','READY FOR INPUT')};
+$('send').onclick=()=>{answer($('message').value);$('message').value=''};$('message').addEventListener('keydown',e=>{if(e.key==='Enter')$('send').click()});
+loadTasks();
+</script>
+</body></html>
