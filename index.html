@@ -182,8 +182,23 @@ function startVoice() {
     log('SYSTEM', 'Could not start listening. Please try again.');
   }
 }
+$('talk').onclick=startVoice;
 
-$('talk').onclick=startVoice;$('stop').onclick=()=>{if(recognition)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();state('','READY FOR INPUT')};
+$('stop').onclick=()=>{
+  document.body.dataset.voiceActive='false';
+
+  if(recognition) {
+    recognition.onend=null;
+    recognition.stop();
+  }
+
+  if('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+  }
+
+  speaking=false;
+  state('','READY FOR INPUT');
+};
 $('send').onclick=()=>{answer($('message').value);$('message').value=''};$('message').addEventListener('keydown',e=>{if(e.key==='Enter')$('send').click()});
 loadTasks();
 </script>
