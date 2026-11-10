@@ -132,7 +132,57 @@ async function answer(raw) {
     state('', 'CONNECTION ERROR');
   }
 }
-function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){log('SYSTEM','Speech recognition is not available here. Please type your command for now.');return}try{recognition=new SR();recognition.lang='en-GB';recognition.continuous=false;recognition.interimResults=false;recognition.onstart=()=>state('listening','LISTENING — SPEAK NOW');recognition.onresult=e=>answer(e.results[0][0].transcript);recognition.onerror=e=>{state('','READY FOR INPUT');log('SYSTEM','Microphone issue: '+e.error+'. Check Safari microphone permission.')};recognition.onend=()=>{if(document.body.classList.contains('listening'))state('','READY FOR INPUT')};recognition.start()}catch(e){log('SYSTEM','Could not start microphone. Try again or type your command.');state('','READY FOR INPUT')}}
+
+
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SR) {
+    log('SYSTEM', 'Voice recognition is not supported by this browser. Please use text input.');
+    return;
+  }
+
+  if (recognition) {
+    try { recognition.stop(); } catch (e) {}
+  }
+
+  recognition = new SR();
+  recognition.lang = 'en-GB';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    state('listening', 'JARVIS IS LISTENING');
+  };
+
+  recognition.onresult = (event) => {
+    const result = event.results[event.results.length - 1];
+
+    if (result.isFinal) {
+      const spokenText = result[0].transcript.trim();
+      if (spokenText) answer(spokenText);
+    }
+  };
+
+  recognition.onerror = (event) => {
+    log('SYSTEM', 'Microphone issue: ' + event.error);
+  };
+
+  recognition.onend = () => {
+    if (document.body.dataset.voiceActive === 'true') {
+      try { recognition.start(); } catch (e) {}
+    }
+  };
+
+  document.body.dataset.voiceActive = 'true';
+
+  try {
+    recognition.start();
+  } catch (e) {
+    log('SYSTEM', 'Could not start listening. Please try again.');
+  }
+}
+
 $('talk').onclick=startVoice;$('stop').onclick=()=>{if(recognition)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();state('','READY FOR INPUT')};
 $('send').onclick=()=>{answer($('message').value);$('message').value=''};$('message').addEventListener('keydown',e=>{if(e.key==='Enter')$('send').click()});
 loadTasks();
