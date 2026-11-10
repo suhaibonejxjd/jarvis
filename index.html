@@ -97,6 +97,38 @@ input{width:100%;background:#061522;border:1px solid #28617a;color:#eafaff;borde
   }
 }
 
+/* JARVIS VOICE-ACTIVE CORE */
+
+body.speaking .orb {
+  animation: jarvisSpeak 0.7s ease-in-out infinite alternate;
+  box-shadow:
+    0 0 25px #ffffff,
+    0 0 55px #42eaff,
+    0 0 110px #16bfff,
+    0 0 160px #087bff88;
+}
+
+body.speaking .core {
+  filter:
+    drop-shadow(0 0 30px #36eaff)
+    drop-shadow(0 0 55px #168dff);
+}
+
+body.speaking .ring {
+  box-shadow: 0 0 20px #42eaff99;
+}
+
+@keyframes jarvisSpeak {
+  from {
+    transform: scale(0.92);
+    filter: brightness(1);
+  }
+  to {
+    transform: scale(1.2);
+    filter: brightness(1.8);
+  }
+}
+
 </style>
 </head>
 <body>
