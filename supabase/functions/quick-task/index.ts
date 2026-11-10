@@ -148,7 +148,7 @@ serve(async (req) => {
 
     let lastError = "Both models failed.";
 
-    for (const model of ["gemini-3.8-flash", "gemini-3.5-flash-lite"]) {
+    for (const model of ["gemini-3.5-flash-lite"]) {
       try {
         const reply = await askGemini(model, message.trim(), apiKey);
 
