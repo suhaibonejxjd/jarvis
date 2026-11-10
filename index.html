@@ -183,8 +183,14 @@ function startVoice() {
 
   document.body.dataset.voiceActive = 'true';
 
-  try {
-    recognition.start();
+if ('speechSynthesis' in window) {
+  const unlock = new SpeechSynthesisUtterance(' ');
+  unlock.volume = 0;
+  speechSynthesis.speak(unlock);
+}
+
+try {
+  recognition.start();
   } catch (e) {
     log('SYSTEM', 'Could not start listening. Please try again.');
   }
