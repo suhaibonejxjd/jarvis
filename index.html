@@ -59,7 +59,40 @@ const $=id=>document.getElementById(id);
 let recognition=null, speaking=false;
 function log(who,text){const d=document.createElement('div');d.className='line';const s=document.createElement('span');s.className='who';s.textContent=who;const t=document.createElement('span');t.textContent=text;d.append(s,t);$('log').append(d);$('log').scrollTop=$('log').scrollHeight}
 function state(s,label){document.body.className=s;$('readout').textContent=label;$('status').textContent=s==='listening'?'LISTENING':s==='thinking'?'PROCESSING':'SYSTEM READY'}
-function speak(text){if(!('speechSynthesis'in window)){log('SYSTEM','Speech output is unavailable in this browser.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=.96;u.pitch=.92;u.onstart=()=>{speaking=true;state('thinking','JARVIS IS SPEAKING')};u.onend=()=>{speaking=false;state('','READY FOR INPUT')};speechSynthesis.speak(u)}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) {
+    log('SYSTEM', 'Speech output is unavailable.');
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-GB';
+  utterance.rate = 1.08;
+  utterance.pitch = 0.95;
+  utterance.volume = 1;
+
+  utterance.onstart = () => {
+    speaking = true;
+    state('thinking', 'JARVIS IS SPEAKING');
+  };
+
+  utterance.onend = () => {
+    speaking = false;
+    state('', 'READY FOR INPUT');
+  };
+
+  utterance.onerror = (event) => {
+    speaking = false;
+    log('SYSTEM', 'Voice playback error: ' + event.error);
+    state('', 'READY FOR INPUT');
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
 function loadTasks(){let a=JSON.parse(localStorage.getItem('jarvisTasks')||'[]');$('tasks').innerHTML='';if(!a.length){$('tasks').textContent='No tasks saved yet.';return}a.forEach((x,i)=>{let d=document.createElement('div');d.className='task';d.textContent=x;let b=document.createElement('button');b.textContent='DONE';b.onclick=()=>{a.splice(i,1);localStorage.setItem('jarvisTasks',JSON.stringify(a));loadTasks()};d.append(b);$('tasks').append(d)})}
 async function answer(raw) {
   const q = raw.trim();
