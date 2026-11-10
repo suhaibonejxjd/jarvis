@@ -165,16 +165,19 @@ function speak(text) {
 
   utterance.onstart = () => {
     speaking = true;
+    document.body.classList.add('speaking');
     state('thinking', 'JARVIS IS SPEAKING');
   };
 
   utterance.onend = () => {
     speaking = false;
+    document.body.classList.remove('speaking');
     state('', 'READY FOR INPUT');
   };
 
   utterance.onerror = (event) => {
     speaking = false;
+    document.body.classList.remove('speaking');
     log('SYSTEM', 'Voice playback error: ' + event.error);
     state('', 'READY FOR INPUT');
   };
