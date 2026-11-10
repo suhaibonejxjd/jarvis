@@ -169,10 +169,17 @@ function startVoice() {
   };
 
   recognition.onend = () => {
-    if (document.body.dataset.voiceActive === 'true') {
-      try { recognition.start(); } catch (e) {}
+  if (document.body.dataset.voiceActive === 'true') {
+    try {
+      recognition.start();
+    } catch (e) {
+      document.body.dataset.voiceActive = 'false';
+      state('', 'READY FOR INPUT');
     }
-  };
+  } else {
+    state('', 'READY FOR INPUT');
+  }
+};
 
   document.body.dataset.voiceActive = 'true';
 
@@ -183,13 +190,20 @@ function startVoice() {
   }
 }
 $('talk').onclick=startVoice;
-
 $('stop').onclick=()=>{
   document.body.dataset.voiceActive='false';
 
   if(recognition) {
-    recognition.onend=null;
-    recognition.stop();
+    const oldRecognition = recognition;
+    recognition = null;
+    oldRecognition.onend = null;
+    oldRecognition.onerror = null;
+
+    try {
+      oldRecognition.stop();
+    } catch(e) {
+      try { oldRecognition.abort(); } catch(e) {}
+    }
   }
 
   if('speechSynthesis' in window) {
